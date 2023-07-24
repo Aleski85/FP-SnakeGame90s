@@ -10,7 +10,7 @@ screen.tracer(0)
 screen.bgcolor("white")
 
 # Creating Border
-turtle.speed(6)
+turtle.speed(0)
 turtle.pensize(4)
 turtle.penup()
 turtle.goto(-310, 250)
@@ -46,6 +46,7 @@ fruit.color("yellow")
 fruit.penup()
 fruit.goto(50, 50)
 
+# Initialize old_fruit list
 old_fruit = []
 
 # Scoring
@@ -77,18 +78,32 @@ def snake_go_right():
 def snake_move():
     if snake.direction == "up":
         y = snake.ycor()
-        snake.sety(y + 20)
-    if snake.direction == "down":
+        if y < 240:
+           snake.sety(y + 20)
+        else:
+            return
+
+    elif snake.direction == "down":
         y = snake.ycor()
-        snake.sety(y - 20)    
-    if snake.direction == "left":
-        x = snake.xcor()
-        snake.setx(x - 20)
-    if snake.direction == "right":
-        x = snake.xcor()
-        snake.setx(x + 20)
+        if y > -240:
+            snake.sety(y - 20)   
+        else:
+            return
         
+    elif snake.direction == "left":
+        x = snake.xcor()
+        if x > -300:
+            snake.setx(x - 20)
+        else: 
+            return
         
+    elif snake.direction == "right":
+        x = snake.xcor()
+        if x < 280:
+            snake.setx(x + 20)
+        else:
+            return     
+             
 # Keyboard Bindings
 screen.listen()
 screen.onkeypress(snake_go_up, "Up")
@@ -110,7 +125,7 @@ while True:
         scoring.write(
             f"Score: {score}", align="center", font=("Monospace", 24, "bold")
         )
-        delay -= 0.01
+        delay -=0.01
 
         # Creating New Food
         new_fruit = turtle.Turtle()
@@ -132,6 +147,8 @@ while True:
         b = snake.ycor()
         old_fruit[0].goto(a, b)
     snake_move()
+    if snake.xcor() > 280 or snake.xcor() < -300 or snake.ycor() > 240 or snake.ycor() < -240:
+        break
 
 
     # Snake and Border Collision
@@ -141,25 +158,25 @@ while True:
         screen.bgcolor("black")
         scoring.goto(0,0)
         scoring.write(
-            f"       Game Over \n Your score is {score}",
+            f"       Game Over\nYour score is {score}",
             align="center",
             font=("Monospace", 40, "bold"),
         )
 
-    # Snake Collision
+    # Snake Collision       
     for food in old_fruit:
+        if food == snake:
+            break
         if food.distance(snake) < 20:
-            time.sleep(1)
             screen.clear()
-            screen.bgcolor("darkgrey")
+            screen.bgcolor("black")
             scoring.goto(0, 0)
             scoring.write(
-                f"     Game Over n\ Your is {score}",
+                f"     Game Over\nYour score is {score}",
                 align="center",
                 font=("Monospace", 24, "bold"),
             )
-            
-    time.sleep(delay)    
-    
-            
+            game_over = True
+            break
         
+    time.sleep(delay)  
